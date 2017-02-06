@@ -31,6 +31,9 @@
     <ClCompile Include="..\..\..\addons\ofxGui\src\ofxToggle.cpp">
       <Filter>addons\ofxGui\src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\addons\ofxVideoRecorder\src\ofxVideoRecorder.cpp">
+      <Filter>addons\ofxVideoRecorder\src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -44,6 +47,12 @@
     </Filter>
     <Filter Include="addons\ofxGui\src">
       <UniqueIdentifier>{6f7b6116-87fd-4e91-86b9-a3a67e13bfd3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxVideoRecorder">
+      <UniqueIdentifier>{148595eb-2db6-4f60-8d91-5050cec6c5e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxVideoRecorder\src">
+      <UniqueIdentifier>{c15977c9-0a21-4553-bd04-41c6d59806f5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -76,6 +85,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\addons\ofxGui\src\ofxToggle.h">
       <Filter>addons\ofxGui\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxVideoRecorder\src\ofxVideoRecorder.h">
+      <Filter>addons\ofxVideoRecorder\src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
