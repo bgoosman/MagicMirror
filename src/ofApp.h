@@ -54,6 +54,9 @@ public:
     int m_maxSeekMillseconds = m_maxRecordMilliseconds * 2;
     int m_playDirection = 1;
     double m_framesPerSecond = 30;
+    float m_quietestSound = 0;
+    float m_loudestSound = 0;
+    float m_averageSound = 0;
     ofxGuiGroup m_time;
     ofxButton m_randomizeButton;
     ofxButton m_backToRealTimeButton;
@@ -65,4 +68,5 @@ public:
     ofxToggle m_isRecording;
     ofxPanel m_gui;
     ofxVideoRecorder m_videoRecorder;
+    std::string m_videoFileName;
 };

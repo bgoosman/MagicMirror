@@ -5,6 +5,8 @@ void ofApp::setup()
 {
     ofSeedRandom();
 
+    m_videoFileName = "gargle";
+
     m_gui.setup("Parameters", "settings.xml");
     m_gui.add(m_delayMilliseconds.setup("delay", m_defaultDelayMilliseconds, 0, m_maxDelayMillseconds));
     m_gui.add(m_loopMilliseconds.setup("loop", m_defaultLoopMilliseconds, 0, m_maxLoopMilliseconds));
@@ -23,7 +25,7 @@ void ofApp::setup()
     for (int i = 0; i < cameraList.size(); i++)
     {
         auto camera = cameraList[i];
-        if (camera.deviceName.find("Logitech") != string::npos)
+        if (camera.deviceName.find("Kinect") != string::npos)
         {
             preferredDeviceId = i;
             camera.deviceName += '\0';
@@ -43,7 +45,7 @@ void ofApp::setup()
     for (int i = 0; i < soundDeviceList.size(); i++)
     {
         auto soundDevice = soundDeviceList[i];
-        if (soundDevice.name.find("2- USB PnP Sound Device") != string::npos)
+        if (soundDevice.name.find("2-") != string::npos)
         {
             preferredDeviceId = i;
             printf("Selecting sound device id=%d\n", i);
@@ -142,7 +144,7 @@ void ofApp::update()
         m_bufferIndex = seekIndex;
         if (m_recordIndexFollowsBufferIndex)
         {
-m_recordIndex = m_bufferIndex;
+            m_recordIndex = m_bufferIndex;
         }
     }
 }
@@ -204,15 +206,24 @@ int ofApp::millisecondsToFrames(double delayMilliseconds, double frameRate)
 
 void ofApp::audioReceived(float *input, int bufferSize, int nChannels)
 {
+    float averageInput = 0.0;
+    float smallestInput = 1.0;
+    float largestInput = 0.0;
     for (int i = 0; i < bufferSize; i++)
     {
-        if (input[i] > 0.35)
+        averageInput += input[i];
+        if (input[i] > largestInput)
         {
-            printf("loud sound detected\n");
-            m_loudSoundDetected = true;
-            break;
+            largestInput = input[i];
+        }
+        if (input[i] < smallestInput)
+        {
+            smallestInput = input[i];
         }
     }
+    m_averageSound = (largestInput + smallestInput) / 2;
+    m_quietestSound = smallestInput;
+    m_loudestSound = largestInput;
 }
 
 void ofApp::recordMillisecondsChanged(int& value)
@@ -243,7 +254,7 @@ void ofApp::keyPressed(int key)
         // start recording video or toggle pausing the recording
         if (!m_videoRecorder.isInitialized())
         {
-            m_videoRecorder.setup("gargle", m_frameWidth, m_frameHeight, m_framesPerSecond);
+            m_videoRecorder.setup(m_videoFileName + ofGetTimestampString(), m_frameWidth, m_frameHeight, m_framesPerSecond);
             m_videoRecorder.start();
         }
         else
