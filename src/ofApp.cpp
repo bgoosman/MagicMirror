@@ -5,6 +5,8 @@ void ofApp::setup()
 {
     ofSeedRandom();
 
+    m_videoFileName = "gargle";
+
     m_gui.setup("Parameters", "settings.xml");
     m_gui.add(m_delayMilliseconds.setup("delay", m_defaultDelayMilliseconds, 0, m_maxDelayMillseconds));
     m_gui.add(m_loopMilliseconds.setup("loop", m_defaultLoopMilliseconds, 0, m_maxLoopMilliseconds));
@@ -14,15 +16,16 @@ void ofApp::setup()
     m_gui.add(m_recordIndexFollowsBufferIndex.setup("record/buffer sync", false));
     m_gui.add(m_randomizeButton.setup("randomize"));
     m_randomizeButton.addListener(this, &ofApp::randomizeButtonClicked);
+    m_gui.add(m_isRecording.setup("is recording", false));
     m_gui.loadFromFile("settings.xml");
-    
+
     // setup video
     std::vector<ofVideoDevice> cameraList = m_grabber.listDevices();
     int preferredDeviceId = 0;
     for (int i = 0; i < cameraList.size(); i++)
     {
         auto camera = cameraList[i];
-        if (camera.deviceName.find("Logitech") != string::npos)
+        if (camera.deviceName.find("Kinect") != string::npos)
         {
             preferredDeviceId = i;
             camera.deviceName += '\0';
@@ -42,7 +45,7 @@ void ofApp::setup()
     for (int i = 0; i < soundDeviceList.size(); i++)
     {
         auto soundDevice = soundDeviceList[i];
-        if (soundDevice.name.find("2- USB PnP Sound Device") != string::npos)
+        if (soundDevice.name.find("2-") != string::npos)
         {
             preferredDeviceId = i;
             printf("Selecting sound device id=%d\n", i);
@@ -58,29 +61,6 @@ void ofApp::update()
     static int m_framesTraveled = 0;
     m_grabber.update();
 
-    //m_seekMilliseconds = m_seekMilliseconds - 1;
-    //if (m_seekMilliseconds % 100 == 0)
-    //{
-    //    m_delayMilliseconds = m_delayMilliseconds + 100;
-    //    m_loopMilliseconds = m_loopMilliseconds + 1000;
-    //}
-
-    // pick a frame to render
-    size_t renderIndex = computeDelayIndex(m_bufferIndex, m_bufferSize, m_framesPerSecond, m_delayMilliseconds);
-    if (m_frames[renderIndex] == nullptr)
-    { 
-        // buffer doesn't have a delay frame yet
-        // render the current frame
-        renderIndex = m_bufferIndex;
-    }
-
-    bool renderFrameEmpty = true;
-    if (m_frames[renderIndex] != nullptr)
-    {
-        m_renderFrame.loadData(*m_frames[renderIndex]);
-        renderFrameEmpty = false;
-    }
-
     // delete the previous frame stored at this location
     if (m_frames[m_recordIndex] != nullptr)
     {
@@ -90,9 +70,32 @@ void ofApp::update()
     // save the pixels
     ofPixels* pixels = new ofPixels(m_grabber.getPixels()); // make a copy
     m_frames[m_recordIndex] = pixels;
-    if (renderFrameEmpty && m_frames[renderIndex] != nullptr)
+
+    // pick a frame to render
+    size_t renderIndex = computeDelayIndex(m_bufferIndex, m_bufferSize, m_framesPerSecond, m_delayMilliseconds);
+    if (m_frames[renderIndex] != nullptr)
     {
         m_renderFrame.loadData(*m_frames[renderIndex]);
+    }
+
+    // save frame to recording if we are recording and we are not paused
+    if (m_videoRecorder.isRecording() && !m_videoRecorder.isPaused())
+    {
+        if (!m_videoRecorder.addFrame(*m_frames[renderIndex]))
+        {
+            ofLogWarning("This frame was not added!");
+        }
+    }
+
+    // check if the video recorder encountered any error while writing video frame or audio smaples.
+    if (m_videoRecorder.hasVideoError())
+    {
+        ofLogWarning("The video recorder failed to write some frames!");
+    }
+
+    if (m_videoRecorder.hasAudioError())
+    {
+        ofLogWarning("The video recorder failed to write some audio samples!");
     }
 
     m_bufferIndex += m_playDirection;
@@ -121,7 +124,7 @@ void ofApp::update()
     }
 
     if (m_loudSoundDetected)
-    { 
+    {
         //m_playDirection *= -1;
         //m_bufferIndex = m_realTimeFrameIndex;
         //m_recordIndex = m_realTimeFrameIndex;
@@ -134,7 +137,7 @@ void ofApp::update()
     if (++m_framesTraveled >= loopInFrames)
     {
         m_loudSoundDetected = false;
-        printf("Traveled %d frames\n", m_framesTraveled);
+        ofLogNotice("MagicMirror", "Traveled %d frames\n", m_framesTraveled);
         m_framesTraveled = 0;
         int const seekIndex = findNextNumberInRange(m_bufferIndex, seekInFrames, 0, m_bufferSize - 1);
         printf("Seeking from frame %d to %d (%d total frames)\n", m_bufferIndex, seekIndex, seekInFrames);
@@ -203,15 +206,24 @@ int ofApp::millisecondsToFrames(double delayMilliseconds, double frameRate)
 
 void ofApp::audioReceived(float *input, int bufferSize, int nChannels)
 {
+    float averageInput = 0.0;
+    float smallestInput = 1.0;
+    float largestInput = 0.0;
     for (int i = 0; i < bufferSize; i++)
     {
-        if (input[i] > 0.35)
+        averageInput += input[i];
+        if (input[i] > largestInput)
         {
-            printf("loud sound detected\n");
-            m_loudSoundDetected = true;
-            break;
+            largestInput = input[i];
+        }
+        if (input[i] < smallestInput)
+        {
+            smallestInput = input[i];
         }
     }
+    m_averageSound = (largestInput + smallestInput) / 2;
+    m_quietestSound = smallestInput;
+    m_loudestSound = largestInput;
 }
 
 void ofApp::recordMillisecondsChanged(int& value)
@@ -231,10 +243,32 @@ void ofApp::keyPressed(int key)
 {
     if (key == ' ')
     {
+        // remove window border
         HWND hwnd = WindowFromDC(wglGetCurrentDC());
         LONG lStyle = GetWindowLong(hwnd, GWL_STYLE);
         lStyle &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU);
         SetWindowLong(hwnd, GWL_STYLE, lStyle);
+    }
+    else if (key == 'r')
+    {
+        // start recording video or toggle pausing the recording
+        if (!m_videoRecorder.isInitialized())
+        {
+            m_videoRecorder.setup(m_videoFileName + ofGetTimestampString(), m_frameWidth, m_frameHeight, m_framesPerSecond);
+            m_videoRecorder.start();
+        }
+        else
+        {
+            m_videoRecorder.setPaused(!m_videoRecorder.isPaused());
+        }
+
+        m_isRecording = m_videoRecorder.isRecording() && !m_videoRecorder.isPaused();
+    }
+    else if (key == 'c')
+    {
+        // stop the recording video
+        m_isRecording = false;
+        m_videoRecorder.close();
     }
 }
 
