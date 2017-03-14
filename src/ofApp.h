@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxVideoRecorder.h"
 #include "ofxGui.h"
+#include "ofxOsc.h"
 
 class ofApp : public ofBaseApp
 {
@@ -30,13 +31,17 @@ public:
     void audioReceived(float* input, int bufferSize, int nChannels);
     void recordMillisecondsChanged(int& value);
     void randomizeButtonClicked();
+    void oscSendFloat(const std::string& address, float value);
+    void setPreset(int presetIndex);
+    int mapAudioToDelay(int currentDelayMilliseconds, float averageAmplitude);
 
-    ofFbo m_fbo;
     ofSoundStream m_soundStream;
     ofTexture m_renderFrame;
     ofVideoGrabber m_grabber;
     vector<ofPixels*> m_frames;
     bool m_loudSoundDetected = false;
+    bool m_audioMapToDelayEnabled = false;
+    bool m_playedLetter = false;
     int m_realTimeFrameIndex = 0;
     int m_bufferSize;
     int m_bufferIndex = 0;
@@ -57,6 +62,9 @@ public:
     float m_quietestSound = 0;
     float m_loudestSound = 0;
     float m_averageSound = 0;
+    float m_programStartTime = 0;
+    float m_lastTimeRecorded = 0;
+    float const TWO_MINUTES = 120;
     ofxGuiGroup m_time;
     ofxButton m_randomizeButton;
     ofxButton m_backToRealTimeButton;
@@ -69,4 +77,8 @@ public:
     ofxPanel m_gui;
     ofxVideoRecorder m_videoRecorder;
     std::string m_videoFileName;
+    ofxOscSender m_oscSender;
+    ofxOscReceiver m_oscReceiver;
+    ofSoundPlayer m_soundPlayer;
+    ofVideoPlayer m_videoPlayer;
 };

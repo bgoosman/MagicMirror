@@ -4,13 +4,19 @@
 void ofApp::setup()
 {
     ofSeedRandom();
+    m_programStartTime = ofGetElapsedTimef();
 
-    m_videoFileName = "gargle";
+    // setup osc sender
+    m_oscSender.setup("192.168.0.106", 9001);
 
+    // setup gui
     m_gui.setup("Parameters", "settings.xml");
     m_gui.add(m_delayMilliseconds.setup("delay", m_defaultDelayMilliseconds, 0, m_maxDelayMillseconds));
-    m_gui.add(m_loopMilliseconds.setup("loop", m_defaultLoopMilliseconds, 0, m_maxLoopMilliseconds));
+    oscSendFloat("/multifaderM/1", ofMap(m_defaultDelayMilliseconds, -m_maxDelayMillseconds, m_maxDelayMillseconds, 0, 1));
+    m_gui.add(m_loopMilliseconds.setup("loop", m_defaultLoopMilliseconds, -m_maxLoopMilliseconds, m_maxLoopMilliseconds));
+    oscSendFloat("/multifaderM/2", ofMap(m_defaultLoopMilliseconds, -m_maxLoopMilliseconds, m_maxLoopMilliseconds, 0, 1));
     m_gui.add(m_seekMilliseconds.setup("seek backwards", m_defaultSeekMilliseconds, -m_maxSeekMillseconds, m_maxSeekMillseconds));
+    oscSendFloat("/multifaderM/3", ofMap(m_defaultSeekMilliseconds, -m_maxSeekMillseconds, m_maxSeekMillseconds, 0, 1));
     m_gui.add(m_recordMilliseconds.setup("record", m_defaultRecordMilliseconds, 0, m_maxRecordMilliseconds * 2));
     m_recordMilliseconds.addListener(this, &ofApp::recordMillisecondsChanged);
     m_gui.add(m_recordIndexFollowsBufferIndex.setup("record/buffer sync", false));
@@ -20,39 +26,85 @@ void ofApp::setup()
     m_gui.loadFromFile("settings.xml");
 
     // setup video
+    m_videoFileName = "gargle";
+    //m_grabber.setGrabber(std::make_shared<ofxPS3EyeGrabber>());
+    //m_grabber.setup(640, 480);
     std::vector<ofVideoDevice> cameraList = m_grabber.listDevices();
-    int preferredDeviceId = 0;
+    int preferredVideoDeviceId = 0;
     for (int i = 0; i < cameraList.size(); i++)
     {
         auto camera = cameraList[i];
-        if (camera.deviceName.find("Kinect") != string::npos)
+        if (camera.deviceName.find("Logitech") != string::npos)
         {
-            preferredDeviceId = i;
+            preferredVideoDeviceId = i;
             camera.deviceName += '\0';
             printf("Selecting camera device id=%d\n", i);
         }
     }
-    m_grabber.setDeviceID(preferredDeviceId);
+    m_grabber.setDeviceID(preferredVideoDeviceId);
     m_grabber.setDesiredFrameRate(m_framesPerSecond);
     m_grabber.initGrabber(m_frameWidth, m_frameHeight);
     m_bufferSize = (int)(((double)(m_defaultRecordMilliseconds) / 1000.0f) * m_framesPerSecond);
     m_frames.resize(m_bufferSize);
     printf("Allocated %d frames\n", m_bufferSize);
+    m_videoPlayer.load("letter.mp4");
+    m_videoPlayer.setLoopState(ofLoopType::OF_LOOP_NONE);
 
     // setup audio
     std::vector<ofSoundDevice> soundDeviceList = m_soundStream.listDevices();
-    preferredDeviceId = 0;
+    int preferredSoundDeviceId = 0;
     for (int i = 0; i < soundDeviceList.size(); i++)
     {
         auto soundDevice = soundDeviceList[i];
         if (soundDevice.name.find("2-") != string::npos)
         {
-            preferredDeviceId = i;
+            preferredSoundDeviceId = i;
             printf("Selecting sound device id=%d\n", i);
         }
     }
-    m_soundStream.setDeviceID(preferredDeviceId);
+    m_soundStream.setDeviceID(preferredSoundDeviceId);
     m_soundStream.setup(this, 0, 1, 44100, 512, 4);
+    m_soundPlayer.loadSound("cargo elevator opens.mp3");
+
+    // enable OSC
+    m_oscReceiver.setup(9002);
+}
+
+void ofApp::setPreset(int preset)
+{
+    switch (preset)
+    {
+    case 0:
+        m_loopMilliseconds = 10000;
+        m_delayMilliseconds = 0;
+        m_seekMilliseconds = 0;
+        break;
+    case 1:
+        m_loopMilliseconds = 10000;
+        m_delayMilliseconds = 5000;
+        m_seekMilliseconds = 0;
+        break;
+    case 2:
+        m_loopMilliseconds = 3300;
+        m_delayMilliseconds = 0;
+        m_seekMilliseconds = -1150;
+        break;
+    }
+}
+
+int ofApp::mapAudioToDelay(int currentDelayMilliseconds, float averageAmplitude)
+{
+    if (m_audioMapToDelayEnabled)
+    {
+        float targetDelayMilliseconds = ofMap(averageAmplitude, 0, 0.02, 0, 5000, true);
+        float deltaMilliseconds = targetDelayMilliseconds - currentDelayMilliseconds;
+        float stepMilliseconds = deltaMilliseconds / 5.0;
+        return currentDelayMilliseconds + stepMilliseconds;
+    }
+    else
+    {
+        return currentDelayMilliseconds;
+    }
 }
 
 //--------------------------------------------------------------
@@ -60,6 +112,65 @@ void ofApp::update()
 {
     static int m_framesTraveled = 0;
     m_grabber.update();
+    m_videoPlayer.update();
+
+    float currentTime = ofGetElapsedTimef();
+    if (currentTime - m_lastTimeRecorded >= TWO_MINUTES)
+    {
+        m_soundPlayer.play();
+        m_lastTimeRecorded = currentTime;
+    }
+    if (currentTime - m_programStartTime >= 16)
+    {
+        if (!m_playedLetter)
+        {
+            m_videoPlayer.play();
+            m_playedLetter = true;
+        }
+    }
+
+    // Handle OSC messages
+    while (m_oscReceiver.hasWaitingMessages())
+    {
+        ofxOscMessage m;
+        m_oscReceiver.getNextMessage(&m);
+        if (m.getAddress() == "/multifaderM/1")
+        {
+            m_delayMilliseconds = ofMap(m.getArgAsFloat(0), 0, 1, -m_maxDelayMillseconds, m_maxDelayMillseconds);
+        }
+        else if (m.getAddress() == "/multifaderM/2")
+        {
+            m_loopMilliseconds = ofMap(m.getArgAsFloat(0), 0, 1, -m_maxLoopMilliseconds, m_maxLoopMilliseconds);
+        }
+        else if (m.getAddress() == "/multifaderM/3")
+        {
+            m_seekMilliseconds = ofMap(m.getArgAsFloat(0), 0, 1, -m_maxSeekMillseconds, m_maxSeekMillseconds);
+        }
+        else if (m.getAddress() == "/1/push1")
+        {
+            setPreset(0);
+        }
+        else if (m.getAddress() == "/1/push2")
+        {
+            setPreset(1);
+        }
+        else if (m.getAddress() == "/1/push3")
+        {
+            setPreset(2);
+        }
+        else if (m.getAddress() == "/1/push4")
+        {
+            // restart the program timeline
+            m_programStartTime = ofGetElapsedTimef();
+            m_playedLetter = false;
+        }
+        oscSendFloat("/multifaderM/2", ofMap(m_loopMilliseconds, -m_maxLoopMilliseconds, m_maxLoopMilliseconds, 0, 1));
+        oscSendFloat("/multifaderM/1", ofMap(m_delayMilliseconds, -m_maxDelayMillseconds, m_maxDelayMillseconds, 0, 1));
+        oscSendFloat("/multifaderM/3", ofMap(m_seekMilliseconds, -m_maxSeekMillseconds, m_maxSeekMillseconds, 0, 1));
+    }
+
+    // Map audio to delay
+    m_delayMilliseconds = mapAudioToDelay(m_delayMilliseconds, m_averageSound);
 
     // delete the previous frame stored at this location
     if (m_frames[m_recordIndex] != nullptr)
@@ -154,6 +265,14 @@ void ofApp::draw()
 {
     m_renderFrame.draw(0, 0, ofGetWidth(), ofGetHeight());
     m_gui.draw();
+    if (m_videoPlayer.isPlaying())
+    {
+        m_videoPlayer.draw(311, 66, 920, 714);
+        if (m_videoPlayer.getDuration() - m_videoPlayer.getPosition() < 1000)
+        {
+            setPreset(1);
+        }
+    }
 }
 
 int ofApp::findNextNumberInRange(int currentNumber, int steps, int rangeStart, int rangeEnd)
@@ -236,6 +355,14 @@ void ofApp::randomizeButtonClicked()
     m_loopMilliseconds = (int)ofRandom(0, m_maxLoopMilliseconds);
     m_seekMilliseconds = (int)ofRandom(0, m_maxSeekMillseconds);
     m_delayMilliseconds = (int)ofRandom(0, m_maxDelayMillseconds);
+}
+
+void ofApp::oscSendFloat(const std::string& address, float value)
+{
+    ofxOscMessage m;
+    m.setAddress(address);
+    m.addFloatArg(value);
+    m_oscSender.sendMessage(m);
 }
 
 //--------------------------------------------------------------

@@ -96,8 +96,8 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <CompileAs>CompileAsCpp</CompileAs>
-      <AdditionalIncludeDirectories>C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxGui\src;
-C:\Users\test\Documents\of_v0.9.8_vs_release\addons\ofxVideoRecorder\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\test\Documents\of_v0.9.8_vs_release\addons\ofxVideoRecorder\src;C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxOsc\libs\oscpack\src\ip\posix;C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxGui\src;C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxOsc\src;C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxOsc\libs\oscpack\src;C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxOsc\libs\oscpack\src\ip;C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxOsc\libs\oscpack\src\ip\win32;C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxOsc\libs\oscpack\src\osc;
+C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxVideoRecorder\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -117,7 +117,8 @@ C:\Users\test\Documents\of_v0.9.8_vs_release\addons\ofxVideoRecorder\src;%(Addit
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <CompileAs>CompileAsCpp</CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\..\addons\ofxVideoRecorder\src;..\..\..\addons\ofxGui\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxGui\src;C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxOsc\src;C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxOsc\libs\oscpack\src;C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxOsc\libs\oscpack\src\ip;C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxOsc\libs\oscpack\src\ip\win32;C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxOsc\libs\oscpack\src\osc;
+C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxVideoRecorder\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -136,8 +137,8 @@ C:\Users\test\Documents\of_v0.9.8_vs_release\addons\ofxVideoRecorder\src;%(Addit
       <WarningLevel>Level3</WarningLevel>
       <CompileAs>CompileAsCpp</CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxGui\src;
-C:\Users\test\Documents\of_v0.9.8_vs_release\addons\ofxVideoRecorder\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\test\Documents\of_v0.9.8_vs_release\addons\ofxVideoRecorder\src;C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxOsc\libs\oscpack\src\ip\posix;C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxGui\src;C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxOsc\src;C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxOsc\libs\oscpack\src;C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxOsc\libs\oscpack\src\ip;C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxOsc\libs\oscpack\src\ip\win32;C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxOsc\libs\oscpack\src\osc;
+C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxVideoRecorder\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
@@ -158,8 +159,8 @@ C:\Users\test\Documents\of_v0.9.8_vs_release\addons\ofxVideoRecorder\src;%(Addit
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <CompileAs>CompileAsCpp</CompileAs>
-      <AdditionalIncludeDirectories>C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxGui\src;
-C:\Users\test\Documents\of_v0.9.8_vs_release\addons\ofxVideoRecorder\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\test\Documents\of_v0.9.8_vs_release\addons\ofxVideoRecorder\src;C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxOsc\libs\oscpack\src\ip\posix;C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxGui\src;C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxOsc\src;C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxOsc\libs\oscpack\src;C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxOsc\libs\oscpack\src\ip;C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxOsc\libs\oscpack\src\ip\win32;C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxOsc\libs\oscpack\src\osc;
+C:\Users\bgoos\Documents\of_v0.9.8_vs_release\addons\ofxVideoRecorder\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
@@ -182,6 +183,18 @@ C:\Users\test\Documents\of_v0.9.8_vs_release\addons\ofxVideoRecorder\src;%(Addit
     <ClCompile Include="..\..\..\addons\ofxGui\src\ofxSlider.cpp" />
     <ClCompile Include="..\..\..\addons\ofxGui\src\ofxSliderGroup.cpp" />
     <ClCompile Include="..\..\..\addons\ofxGui\src\ofxToggle.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxOsc\libs\oscpack\src\ip\IpEndpointName.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxOsc\libs\oscpack\src\ip\win32\NetworkingUtils.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxOsc\libs\oscpack\src\ip\win32\UdpSocket.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxOsc\libs\oscpack\src\osc\OscOutboundPacketStream.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxOsc\libs\oscpack\src\osc\OscPrintReceivedElements.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxOsc\libs\oscpack\src\osc\OscReceivedElements.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxOsc\libs\oscpack\src\osc\OscTypes.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxOsc\src\ofxOscBundle.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxOsc\src\ofxOscMessage.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxOsc\src\ofxOscParameterSync.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxOsc\src\ofxOscReceiver.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxOsc\src\ofxOscSender.cpp" />
     <ClCompile Include="..\..\..\addons\ofxVideoRecorder\src\ofxVideoRecorder.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\ofApp.cpp" />
@@ -196,6 +209,26 @@ C:\Users\test\Documents\of_v0.9.8_vs_release\addons\ofxVideoRecorder\src;%(Addit
     <ClInclude Include="..\..\..\addons\ofxGui\src\ofxSlider.h" />
     <ClInclude Include="..\..\..\addons\ofxGui\src\ofxSliderGroup.h" />
     <ClInclude Include="..\..\..\addons\ofxGui\src\ofxToggle.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\libs\oscpack\src\ip\IpEndpointName.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\libs\oscpack\src\ip\NetworkingUtils.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\libs\oscpack\src\ip\PacketListener.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\libs\oscpack\src\ip\TimerListener.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\libs\oscpack\src\ip\UdpSocket.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\libs\oscpack\src\osc\MessageMappingOscPacketListener.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\libs\oscpack\src\osc\OscException.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\libs\oscpack\src\osc\OscHostEndianness.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\libs\oscpack\src\osc\OscOutboundPacketStream.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\libs\oscpack\src\osc\OscPacketListener.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\libs\oscpack\src\osc\OscPrintReceivedElements.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\libs\oscpack\src\osc\OscReceivedElements.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\libs\oscpack\src\osc\OscTypes.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\src\ofxOsc.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\src\ofxOscArg.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\src\ofxOscBundle.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\src\ofxOscMessage.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\src\ofxOscParameterSync.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\src\ofxOscReceiver.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\src\ofxOscSender.h" />
     <ClInclude Include="..\..\..\addons\ofxVideoRecorder\src\ofxVideoRecorder.h" />
     <ClInclude Include="src\ofApp.h" />
   </ItemGroup>
