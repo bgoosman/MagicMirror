@@ -164,8 +164,8 @@ void ofApp::update()
             m_programStartTime = ofGetElapsedTimef();
             m_playedLetter = false;
         }
-        oscSendFloat("/multifaderM/2", ofMap(m_loopMilliseconds, -m_maxLoopMilliseconds, m_maxLoopMilliseconds, 0, 1));
         oscSendFloat("/multifaderM/1", ofMap(m_delayMilliseconds, -m_maxDelayMillseconds, m_maxDelayMillseconds, 0, 1));
+        oscSendFloat("/multifaderM/2", ofMap(m_loopMilliseconds, -m_maxLoopMilliseconds, m_maxLoopMilliseconds, 0, 1));
         oscSendFloat("/multifaderM/3", ofMap(m_seekMilliseconds, -m_maxSeekMillseconds, m_maxSeekMillseconds, 0, 1));
     }
 
@@ -234,14 +234,6 @@ void ofApp::update()
         m_realTimeFrameIndex = 0;
     }
 
-    if (m_loudSoundDetected)
-    {
-        //m_playDirection *= -1;
-        //m_bufferIndex = m_realTimeFrameIndex;
-        //m_recordIndex = m_realTimeFrameIndex;
-        //m_framesTraveled = 0;
-    }
-
     // jump back in time one delay interval when we travel past one delay interval
     int const loopInFrames = millisecondsToFrames(m_loopMilliseconds, m_framesPerSecond);
     int const seekInFrames = millisecondsToFrames(m_seekMilliseconds, m_framesPerSecond);
@@ -268,9 +260,14 @@ void ofApp::draw()
     if (m_videoPlayer.isPlaying())
     {
         m_videoPlayer.draw(311, 66, 920, 714);
-        if (m_videoPlayer.getDuration() - m_videoPlayer.getPosition() < 1000)
+        float duration = m_videoPlayer.getDuration();
+        float position = m_videoPlayer.getPosition() * duration;
+        if (duration - position < 2)
         {
             setPreset(1);
+            oscSendFloat("/multifaderM/1", ofMap(m_delayMilliseconds, -m_maxDelayMillseconds, m_maxDelayMillseconds, 0, 1));
+            oscSendFloat("/multifaderM/2", ofMap(m_loopMilliseconds, -m_maxLoopMilliseconds, m_maxLoopMilliseconds, 0, 1));
+            oscSendFloat("/multifaderM/3", ofMap(m_seekMilliseconds, -m_maxSeekMillseconds, m_maxSeekMillseconds, 0, 1));
         }
     }
 }
